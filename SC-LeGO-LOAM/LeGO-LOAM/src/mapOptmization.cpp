@@ -45,6 +45,7 @@
 
 #include "Scancontext.h"
 #include "utility.h"
+#include "viewpointAwareICP.h"
 
 using namespace gtsam;
 
@@ -1051,6 +1052,21 @@ public:
          * 2. SC loop factor (scan context)
          */
         if( SCclosestHistoryFrameID != -1 ) {
+            ViewpointAwareICP vicp;
+
+            vicp.setInputSource(SClatestSurfKeyFrameCloud);
+            vicp.setInputTarget(SCnearHistorySurfKeyFrameCloudDS);
+            vicp.setInitialGuess(Eigen::Isometry3d::Identity());
+            vicp.setMaxCorrespondenceDistance(50.0);
+            vicp.setMaximumIterations(50);
+            vicp.setTransformationEpsilon(1e-6);
+            vicp.setEuclideanFitnessEpsilon(1e-6);
+            vicp.setEuclideanFitnessEpsilon(0.5);
+
+            pcl::PointCloud<PointType>::Ptr unused_result(new pcl::PointCloud<PointType>());
+            vicp.align(*unused_result);
+
+
             pcl::IterativeClosestPoint<PointType, PointType> icp;
             icp.setMaxCorrespondenceDistance(100);
             icp.setMaximumIterations(100);

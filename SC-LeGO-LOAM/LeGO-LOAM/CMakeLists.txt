@@ -47,6 +47,9 @@ link_directories(
 	${GTSAM_LIBRARY_DIRS}
 )
 
+find_package(Boost REQUIRED COMPONENTS serialization thread timer chrono)
+include_directories(${Boost_INCLUDE_DIRS})
+
 add_executable(imageProjection src/imageProjection.cpp)
 add_dependencies(imageProjection ${catkin_EXPORTED_TARGETS} cloud_msgs_gencpp)
 target_link_libraries(imageProjection ${catkin_LIBRARIES} ${PCL_LIBRARIES} ${OpenCV_LIBRARIES})
@@ -58,11 +61,14 @@ target_link_libraries(featureAssociation ${catkin_LIBRARIES} ${PCL_LIBRARIES} ${
 add_executable(mapOptmization 
     src/mapOptmization.cpp
     src/Scancontext.cpp
+    src/viewpointAwareICP.cpp
+    src/v_score.cpp
 )
 target_link_libraries(mapOptmization 
     ${catkin_LIBRARIES} 
     ${PCL_LIBRARIES} 
     ${OpenCV_LIBRARIES} 
+    ${Boost_LIBRARIES}
     gtsam
     Eigen3::Eigen
 )
